@@ -1,0 +1,48 @@
+#pragma kernel Main
+#include <Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl>
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
+
+
+/* General Variables */
+RWTexture2D<float4> Scene;
+Texture2D<float> Depth;
+SamplerState samplerDepth;
+float4 BaseColor;
+
+/* Dot Variables */
+float4 DotColor;
+float DotRadius;
+StructuredBuffer<float3> DotPositions;
+uint DotCount;
+
+[numthreads(8,8,1)]
+void Main(uint3 id : SV_DispatchThreadID)
+{
+    uint2 px = id.xy;
+
+    float depth = Depth.SampleLevel(samplerDepth, px, 0);
+    if (depth == 0)
+    {
+        Scene[px] = BaseColor;
+        return;
+    }
+
+    float4 clipPos = float4(px * 2.0 - 1.0, depth, 1.0);
+    float4 viewPos = mul(unity_CameraInvProjection, clipPos);
+    viewPos /= viewPos.w;
+    float4 worldPos = mul(_InvCameraViewProj, viewPos);
+
+    bool isDot = false;
+    for (uint i = 0; i < DotCount; ++i)
+    {
+        float3 dotPos = DotPositions[i];
+        float dist = distance(worldPos.xyz, dotPos);
+        if (dist < DotRadius)
+        {
+            isDot = true;
+            break;
+        }
+    }
+    
+    Scene[id.xy] = isDot ? DotColor : BaseColor;
+}
