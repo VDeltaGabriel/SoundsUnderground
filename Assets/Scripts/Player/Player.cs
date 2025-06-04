@@ -16,6 +16,11 @@ public class Player : MonoBehaviour
     private Sonar _sonar;
 
     public PlayerActions PlayerActions => _playerActions;
+
+    public void SetPosition(Vector3 pos)
+    {
+        transform.position = pos;
+    }
     
     private void Awake()
     {
@@ -52,8 +57,7 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(_rotDir);
-        _rb.velocity = transform.forward * _moveDir * _moveSpeed * Time.deltaTime;
+        _rb.velocity = transform.forward * (_moveDir * _moveSpeed * Time.deltaTime);
         transform.Rotate(Vector3.up, 1.0f * _rotDir * _rotSpeed * Time.deltaTime);
     }
 }

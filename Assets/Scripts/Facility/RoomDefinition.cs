@@ -4,32 +4,52 @@ using UnityEngine.ProBuilder.Shapes;
 
 namespace Facility
 {
-    public enum DoorDirection
+    public enum Direction
     {
-        Up,Down,Left,Right
+        Up,
+        Down,
+        Left,
+        Right
     }
 
-    [System.Serializable]
-    public struct DoorDefinition
+    public static class DirectionExtensions
     {
-        public DoorDirection Direction;
-        public Transform Door;
-    }
-
-    [CreateAssetMenu(fileName = "New Room Def", menuName = "Facility/RoomDefinition/Create")]
-    public class RoomDefinition : ScriptableObject
-    {
-        public List<DoorDefinition> Doors = new List<DoorDefinition>();
-        public GameObject Model;
-
-        public Dictionary<DoorDirection, Transform> DoorsDict
+        public static Direction Opposite(this Direction direction)
         {
-            get
+            switch (direction)
             {
-                Dictionary<DoorDirection, Transform> dict = new Dictionary<DoorDirection, Transform>();
-                foreach (DoorDefinition def in Doors) dict.Add(def.Direction, def.Door);
-                return dict;
+                case Direction.Up: return Direction.Down;
+                case Direction.Down: return Direction.Up;
+                case Direction.Left: return Direction.Right;
+                case Direction.Right: return Direction.Left;
             }
+            return direction;
+        }
+    }
+    
+    public class RoomDefinition
+    {
+        public Vector2Int Position { get; private set; }
+        public HashSet<Direction> Connections { get; private set; }
+        public bool IsStart { get; set; }
+        public float Cost { get; set; }
+
+        public RoomDefinition(Vector2Int pos)
+        {
+            Position = pos;
+            Connections = new HashSet<Direction>();
+            IsStart = false;
+            Cost = 0f;
+        }
+
+        public void AddConnection(Direction dir)
+        {
+            Connections.Add(dir);
+        }
+
+        public bool HasConnection(Direction dir)
+        {
+            return Connections.Contains(dir);
         }
     }
 }

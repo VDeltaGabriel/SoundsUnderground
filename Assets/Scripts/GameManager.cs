@@ -31,4 +31,9 @@ public class GameManager : MonoBehaviour
         Debug.Log("Quitting game");
         Application.Quit();
     }
+
+    public Player GetPlayer()
+    {
+        return GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+    }
 }
