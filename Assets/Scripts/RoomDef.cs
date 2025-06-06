@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Facility;
 using UnityEngine;
 
 [DisallowMultipleComponent]
 public class RoomDef : MonoBehaviour
 {
     [SerializeField] private GameObject _model;
+    public Direction[] AvailableDirections;
     
     public GameObject Model => _model;
 

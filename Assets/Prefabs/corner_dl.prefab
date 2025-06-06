@@ -76,11 +76,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5d5fef071ca52d4bb10a4f7d414ee39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isEntry: 0
-  _spawnPoints:
-  - {fileID: 8044413104703236483}
-  - {fileID: 4721745249406907019}
-  _spawnPointsDirs: 0300000000000000
+  _model: {fileID: 7116405800746539193}
+  AvailableDirections: 0200000001000000
 --- !u!1 &7116405800746539193
 GameObject:
   m_ObjectHideFlags: 0

@@ -53,6 +53,42 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""select1"",
+                    ""type"": ""Button"",
+                    ""id"": ""2eae54f4-5866-4612-8891-260b13898300"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""select2"",
+                    ""type"": ""Button"",
+                    ""id"": ""d305edb5-70c2-4f9d-b773-ed11e280f35c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""select3"",
+                    ""type"": ""Button"",
+                    ""id"": ""2fbd1ed9-d619-436a-b781-a853d604d66e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""pickup"",
+                    ""type"": ""Button"",
+                    ""id"": ""d980f3a4-3688-45ef-b7b6-1f6197f021be"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -132,6 +168,50 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
                     ""action"": ""sonar"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5ce5f11c-6d88-4705-868e-a3cf85703ae0"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""select1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8c310756-8cde-4cb5-a459-f47593bac372"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""select2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b0d1296d-92ea-4b74-b06f-13704070482c"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""select3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""95f36759-34ef-442a-9b99-6f7f9ce5bf4e"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""pickup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -143,6 +223,10 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
         m_Actions_move = m_Actions.FindAction("move", throwIfNotFound: true);
         m_Actions_rotate = m_Actions.FindAction("rotate", throwIfNotFound: true);
         m_Actions_sonar = m_Actions.FindAction("sonar", throwIfNotFound: true);
+        m_Actions_select1 = m_Actions.FindAction("select1", throwIfNotFound: true);
+        m_Actions_select2 = m_Actions.FindAction("select2", throwIfNotFound: true);
+        m_Actions_select3 = m_Actions.FindAction("select3", throwIfNotFound: true);
+        m_Actions_pickup = m_Actions.FindAction("pickup", throwIfNotFound: true);
     }
 
     ~@PlayerActions()
@@ -212,6 +296,10 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Actions_move;
     private readonly InputAction m_Actions_rotate;
     private readonly InputAction m_Actions_sonar;
+    private readonly InputAction m_Actions_select1;
+    private readonly InputAction m_Actions_select2;
+    private readonly InputAction m_Actions_select3;
+    private readonly InputAction m_Actions_pickup;
     public struct ActionsActions
     {
         private @PlayerActions m_Wrapper;
@@ -219,6 +307,10 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
         public InputAction @move => m_Wrapper.m_Actions_move;
         public InputAction @rotate => m_Wrapper.m_Actions_rotate;
         public InputAction @sonar => m_Wrapper.m_Actions_sonar;
+        public InputAction @select1 => m_Wrapper.m_Actions_select1;
+        public InputAction @select2 => m_Wrapper.m_Actions_select2;
+        public InputAction @select3 => m_Wrapper.m_Actions_select3;
+        public InputAction @pickup => m_Wrapper.m_Actions_pickup;
         public InputActionMap Get() { return m_Wrapper.m_Actions; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -237,6 +329,18 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
             @sonar.started += instance.OnSonar;
             @sonar.performed += instance.OnSonar;
             @sonar.canceled += instance.OnSonar;
+            @select1.started += instance.OnSelect1;
+            @select1.performed += instance.OnSelect1;
+            @select1.canceled += instance.OnSelect1;
+            @select2.started += instance.OnSelect2;
+            @select2.performed += instance.OnSelect2;
+            @select2.canceled += instance.OnSelect2;
+            @select3.started += instance.OnSelect3;
+            @select3.performed += instance.OnSelect3;
+            @select3.canceled += instance.OnSelect3;
+            @pickup.started += instance.OnPickup;
+            @pickup.performed += instance.OnPickup;
+            @pickup.canceled += instance.OnPickup;
         }
 
         private void UnregisterCallbacks(IActionsActions instance)
@@ -250,6 +354,18 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
             @sonar.started -= instance.OnSonar;
             @sonar.performed -= instance.OnSonar;
             @sonar.canceled -= instance.OnSonar;
+            @select1.started -= instance.OnSelect1;
+            @select1.performed -= instance.OnSelect1;
+            @select1.canceled -= instance.OnSelect1;
+            @select2.started -= instance.OnSelect2;
+            @select2.performed -= instance.OnSelect2;
+            @select2.canceled -= instance.OnSelect2;
+            @select3.started -= instance.OnSelect3;
+            @select3.performed -= instance.OnSelect3;
+            @select3.canceled -= instance.OnSelect3;
+            @pickup.started -= instance.OnPickup;
+            @pickup.performed -= instance.OnPickup;
+            @pickup.canceled -= instance.OnPickup;
         }
 
         public void RemoveCallbacks(IActionsActions instance)
@@ -272,5 +388,9 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
         void OnSonar(InputAction.CallbackContext context);
+        void OnSelect1(InputAction.CallbackContext context);
+        void OnSelect2(InputAction.CallbackContext context);
+        void OnSelect3(InputAction.CallbackContext context);
+        void OnPickup(InputAction.CallbackContext context);
     }
 }

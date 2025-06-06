@@ -1009,3 +1009,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _model: {fileID: 4912226658904191298}
+  AvailableDirections: 0000000001000000

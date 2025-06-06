@@ -1,13 +1,23 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
+using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.Profiling;
+
+[Serializable]
+public struct SonarEntry
+{
+    public Vector3 Position;
+    public SonarEntity Entity;
+}
 
 [DisallowMultipleComponent]
 public class Sonar : MonoBehaviour
 {
-    public static event UnityAction<Vector3[]> OnSonarDispatched; 
+    public static event UnityAction<SonarEntry[]> OnSonarDispatched; 
     
     [Header("Config")]
     [SerializeField] private Camera _cam;
@@ -17,29 +27,79 @@ public class Sonar : MonoBehaviour
     [SerializeField] private GameObject _debugPoint;
     private Player _player;
 
+    private NativeArray<RaycastCommand> _rays;
+    private NativeArray<RaycastHit> _hits;
+    private int _row;
+
+    private QueryParameters _query = new QueryParameters();
+
+    private void Awake()
+    {
+        _row = (int)(1.0f / _rayStep) + 1;
+        _rays = new NativeArray<RaycastCommand>(_row*_row, Allocator.Persistent);
+        _hits = new NativeArray<RaycastHit>(_row*_row, Allocator.Persistent);
+        _query.layerMask = LayerMask.NameToLayer("Player");
+    }
+
+    private void OnDestroy()
+    {
+        _rays.Dispose();
+        _hits.Dispose();
+    }
+
+    private RaycastCommand CreateSonarCommand(Vector3 origin, Vector3 dir, float dst)
+    {
+        return new RaycastCommand
+        {
+            queryParameters = _query,
+            direction = dir,
+            distance = dst,
+            from = origin,
+        };
+    }
+    
+    private JobHandle CreateSonarJob(NativeArray<RaycastCommand> cmds, NativeArray<RaycastHit> hits)
+    {
+        JobHandle job = RaycastCommand.ScheduleBatch(cmds, hits, 1);
+        return job;
+    }
+
     public void SendSonar(InputAction.CallbackContext ctx)
     {
-        List<Vector3> points = new List<Vector3>();
+        Profiler.BeginSample("SonarScan");
+        List<SonarEntry> points = new List<SonarEntry>();
+        
+        int idx = 0;
         for (float x = 0; x <= 1; x += _rayStep)
         {
-            for (float y = 0; y <= 1; y += _rayStep)
+            for (float y = 1; y >= 0; y -= _rayStep)
             {
                 Ray r = _cam.ViewportPointToRay(new Vector3(x,y,0));
 
-                RaycastHit hit;
-                if (Physics.Raycast(r, out hit, Single.MaxValue, LayerMask.NameToLayer("Player")))
-                {
-                    if (false)
-                    {
-                        GameObject obj = Instantiate(_debugPoint, hit.point, Quaternion.identity);
-                        Destroy(obj, 10f);
-                    }
+                _rays[idx] = CreateSonarCommand(r.origin, r.direction, Single.MaxValue);
 
-                    points.Add(hit.point);
-                }
+                idx++;
             }
         }
-        Debug.Log($"Sent {points.Count} points");
+        
+        JobHandle sonarJob = CreateSonarJob(_rays, _hits);
+        sonarJob.Complete();
+
+        foreach (RaycastHit hit in _hits)
+        {
+            SonarEntry entry = new SonarEntry();
+            entry.Position = hit.point;
+
+            SonarEntity ent = hit.transform.GetComponent<SonarEntity>();
+            if (ent)
+            {
+                entry.Entity = ent;
+            }
+                    
+            points.Add(entry);
+        }
+        
+        Profiler.EndSample();
         OnSonarDispatched?.Invoke(points.ToArray());
     }
 
@@ -49,7 +109,7 @@ public class Sonar : MonoBehaviour
 
         for (float x = 0; x <= 1; x += _rayStep)
         {
-            for (float y = 0; y <= 1; y += _rayStep)
+            for (float y = 1; y >= 0; y -= _rayStep)
             {
                 Ray r = _cam.ViewportPointToRay(new Vector3(x,y,0));
                 Gizmos.DrawRay(r.origin, r.direction);

@@ -33,7 +33,7 @@ Shader "SoundsUnderground/Sonar"
             UNITY_INSTANCING_BUFFER_START(Props)
                 UNITY_DEFINE_INSTANCED_PROP(float4, _Color)
             UNITY_INSTANCING_BUFFER_END(Props)
-
+            
             v2f vert (appdata v)
             {
                 v2f o;

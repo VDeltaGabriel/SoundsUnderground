@@ -170,6 +170,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _model: {fileID: 8083795964044287771}
+  AvailableDirections: 00000000010000000200000003000000
 --- !u!1 &8083795964044287771
 GameObject:
   m_ObjectHideFlags: 0

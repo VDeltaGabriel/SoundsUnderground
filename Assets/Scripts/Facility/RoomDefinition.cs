@@ -25,21 +25,35 @@ namespace Facility
             }
             return direction;
         }
+
+        public static Vector2Int ToIntVec2(this Direction direction)
+        {
+            return direction switch
+            {
+                Direction.Up => new Vector2Int(0, 1),
+                Direction.Down => new Vector2Int(0, -1),
+                Direction.Left => new Vector2Int(-1, 0),
+                Direction.Right => new Vector2Int(1, 0),
+                _ => new Vector2Int(0, 0),
+            };
+        }
     }
     
     public class RoomDefinition
     {
         public Vector2Int Position { get; private set; }
         public HashSet<Direction> Connections { get; private set; }
+        public Direction[] Directions { get; private set; }
         public bool IsStart { get; set; }
         public float Cost { get; set; }
 
-        public RoomDefinition(Vector2Int pos)
+        public RoomDefinition(Vector2Int pos, Direction[] directions)
         {
             Position = pos;
             Connections = new HashSet<Direction>();
             IsStart = false;
             Cost = 0f;
+            Directions = directions;
         }
 
         public void AddConnection(Direction dir)
